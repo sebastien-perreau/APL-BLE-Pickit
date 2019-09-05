@@ -23,7 +23,7 @@ Then add it to your project by adding the following dependency:
 
 ```grovy
 dependencies {
-		implementation 'com.github.sebastien-perreau:APL-BLE_Pickit:0.9.0'
+		implementation 'com.github.sebastien-perreau:APL-BLE_Pickit:0.1-beta'
 	}
 ```
 
