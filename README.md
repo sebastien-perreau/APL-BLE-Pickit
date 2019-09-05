@@ -12,19 +12,19 @@ First add the JitPack repository to your build file:
 
 ```grovy
 allprojects {
-		repositories {
-			...
-			maven { url 'https://jitpack.io' }
-		}
-	}
+    repositories {
+        ...
+        maven { url 'https://jitpack.io' }
+    }
+}
 ```
 
 Then add it to your project by adding the following dependency:
 
 ```grovy
 dependencies {
-		implementation 'com.github.sebastien-perreau:APL-BLE_Pickit:0.1-beta'
-	}
+    implementation 'com.github.sebastien-perreau:APL-BLE-Pickit:0.1-beta'
+}
 ```
 
 #### As a library module
