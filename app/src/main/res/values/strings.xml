@@ -1,3 +1,5 @@
 <resources>
     <string name="app_name">APL_BLE Pickit</string>
+    <string name="str_app_tv_name">Name of the peripheral to connect</string>
+    <string name="str_app_et_name">PROTOTYPES</string>
 </resources>

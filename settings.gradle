@@ -1,2 +1,2 @@
-include ':app'
+include ':app', ':blepickit'
 rootProject.name='APL_BLE Pickit'
