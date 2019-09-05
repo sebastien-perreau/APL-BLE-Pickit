@@ -8,7 +8,7 @@ import androidx.annotation.NonNull;
 import androidx.lifecycle.AndroidViewModel;
 import androidx.lifecycle.MutableLiveData;
 
-public class BlePickitViewModel extends AndroidViewModel implements BlePickitManager.Callbacks
+public class BlePickitViewModel extends AndroidViewModel
 {
 
     private final BlePickitManager mBlePickitManager;
@@ -28,7 +28,141 @@ public class BlePickitViewModel extends AndroidViewModel implements BlePickitMan
     {
         super(application);
         mBlePickitManager = new BlePickitManager(getApplication());
-        mBlePickitManager.setGattCallbacks(this);
+        mBlePickitManager.setGattCallbacks(new BlePickitManager.Callbacks()
+        {
+
+            @Override
+            public void onChar1501DataReceived(byte[] data)
+            {
+
+            }
+
+            @Override
+            public void onChar1502DataReceived(byte[] data)
+            {
+                testTickStop = System.currentTimeMillis() - testTickStart;
+                testLengthBytes += data.length;
+                Log.d("My App", "Test reception - total data length: " +testLengthBytes+ " (+" +data.length+ " bytes) / time: " + testTickStop + " ms.");
+            }
+
+            @Override
+            public void onChar1503DataReceived(byte[] data)
+            {
+                if ((data[0] == 0x00) && (data.length == 15))    // Get BLE PARAMS (data received from BLE PICKIT)
+                {
+                    mBlePickit_1503_GET_BLE_PARAMETERS.postValue(data);
+                }
+                else if ((data[0] == 0x09) && (data.length == 11))    // Get parameters from Standard Prototype Controller
+                {
+                    mBlePickit_1503_GET_SPC_PARAMETERS.postValue(data);
+                }
+            }
+
+            @Override
+            public void onChar1501DataSent(byte[] data)
+            {
+
+            }
+
+            @Override
+            public void onChar1502DataSent(byte[] data)
+            {
+                testTickStart = System.currentTimeMillis();
+                testLengthBytes = 0;
+                Log.d("My App", "Test Started - data length: " +data.length);
+            }
+
+            @Override
+            public void onChar1503DataSent(byte[] data)
+            {
+
+            }
+
+
+            @Override
+            public void onDeviceConnecting(@NonNull BluetoothDevice device)
+            {
+                mBlePickitIsReady.postValue(false);
+                mBlePickitConnectionState.postValue("Connecting...");
+            }
+
+            @Override
+            public void onDeviceConnected(@NonNull BluetoothDevice device)
+            {
+                mBlePickitIsConnected.postValue(true);
+                mBlePickitIsReady.postValue(false);
+                mBlePickitConnectionState.postValue("Connected - Services Discovering...");
+            }
+
+            @Override
+            public void onDeviceDisconnecting(@NonNull BluetoothDevice device)
+            {
+                mBlePickitIsConnected.postValue(false);
+                mBlePickitIsReady.postValue(false);
+                mBlePickitConnectionState.postValue("Disconnecting...");
+            }
+
+            @Override
+            public void onDeviceDisconnected(@NonNull BluetoothDevice device)
+            {
+                mBlePickitIsConnected.postValue(false);
+                mBlePickitIsReady.postValue(false);
+                mBlePickitConnectionState.postValue("Disconnected");
+            }
+
+            @Override
+            public void onLinkLossOccurred(@NonNull BluetoothDevice device)
+            {
+                mBlePickitIsConnected.postValue(false);
+                mBlePickitIsReady.postValue(false);
+                mBlePickitConnectionState.postValue("Link Loss");
+            }
+
+            @Override
+            public void onServicesDiscovered(@NonNull BluetoothDevice device, boolean optionalServicesFound)
+            {
+                mBlePickitIsReady.postValue(false);
+                mBlePickitConnectionState.postValue("Services Discovered");
+            }
+
+            @Override
+            public void onDeviceReady(@NonNull BluetoothDevice device)
+            {
+                mBlePickitConnectionState.postValue(device.getName() + " ready");
+                mBlePickitIsReady.postValue(true);
+            }
+
+            @Override
+            public void onBondingRequired(@NonNull BluetoothDevice device)
+            {
+
+            }
+
+            @Override
+            public void onBonded(@NonNull BluetoothDevice device)
+            {
+
+            }
+
+            @Override
+            public void onBondingFailed(@NonNull BluetoothDevice device)
+            {
+
+            }
+
+            @Override
+            public void onError(@NonNull BluetoothDevice device, @NonNull String message, int errorCode)
+            {
+
+            }
+
+            @Override
+            public void onDeviceNotSupported(@NonNull BluetoothDevice device)
+            {
+                // Called when service discovery has finished but the main services were not found on the device.
+                mBlePickitConnectionState.postValue("Services Discovering finised. Main services not found.");
+            }
+        });
     }
 
     public MutableLiveData<String> getBlePickitConnectionState()
@@ -85,7 +219,7 @@ public class BlePickitViewModel extends AndroidViewModel implements BlePickitMan
     public void requestGetBleParams()
     {
         final byte[] data = new byte[1];
-        data[0] = 0x00; // ID_GET_BLE_PARAMS
+        // ID_GET_BLE_PARAMS = 0x00
         mBlePickitManager.writeCharacteristic1503(data);
     }
 
@@ -240,136 +374,5 @@ public class BlePickitViewModel extends AndroidViewModel implements BlePickitMan
         mBlePickitManager.writeCharacteristic1502(data);
         // Déclencher un compteur entre l'interruption sur l'envoi de la donnée et la réception des données.
         // Compter le nombre de données reçues + temps.
-    }
-
-    @Override
-    public void onChar1501DataReceived(byte[] data)
-    {
-
-    }
-
-    @Override
-    public void onChar1502DataReceived(byte[] data)
-    {
-        testTickStop = System.currentTimeMillis() - testTickStart;
-        testLengthBytes += data.length;
-        Log.d("My App", "Test reception - total data length: " +testLengthBytes+ " (+" +data.length+ " bytes) / time: " + testTickStop + " ms.");
-    }
-
-    @Override
-    public void onChar1503DataReceived(byte[] data)
-    {
-        if ((data[0] == 0x00) && (data.length == 15))    // Get BLE PARAMS (data received from BLE PICKIT)
-        {
-            mBlePickit_1503_GET_BLE_PARAMETERS.postValue(data);
-        }
-        else if ((data[0] == 0x09) && (data.length == 11))    // Get parameters from Standard Prototype Controller
-        {
-            mBlePickit_1503_GET_SPC_PARAMETERS.postValue(data);
-        }
-    }
-
-    @Override
-    public void onChar1501DataSent(byte[] data)
-    {
-
-    }
-
-    @Override
-    public void onChar1502DataSent(byte[] data)
-    {
-        testTickStart = System.currentTimeMillis();
-        testLengthBytes = 0;
-        Log.d("My App", "Test Started - data length: " +data.length);
-    }
-
-    @Override
-    public void onChar1503DataSent(byte[] data)
-    {
-
-    }
-
-    @Override
-    public void onDeviceConnecting(BluetoothDevice device)
-    {
-        mBlePickitIsReady.postValue(false);
-        mBlePickitConnectionState.postValue("Connecting...");
-    }
-
-    @Override
-    public void onDeviceConnected(BluetoothDevice device)
-    {
-        mBlePickitIsConnected.postValue(true);
-        mBlePickitIsReady.postValue(false);
-        mBlePickitConnectionState.postValue("Connected - Services Discovering...");
-    }
-
-    @Override
-    public void onDeviceDisconnecting(BluetoothDevice device)
-    {
-        mBlePickitIsConnected.postValue(false);
-        mBlePickitIsReady.postValue(false);
-        mBlePickitConnectionState.postValue("Disconnecting...");
-    }
-
-    @Override
-    public void onDeviceDisconnected(BluetoothDevice device)
-    {
-        mBlePickitIsConnected.postValue(false);
-        mBlePickitIsReady.postValue(false);
-        mBlePickitConnectionState.postValue("Disconnected");
-    }
-
-    @Override
-    public void onLinkLossOccurred(@NonNull BluetoothDevice device)
-    {
-        mBlePickitIsConnected.postValue(false);
-        mBlePickitIsReady.postValue(false);
-        mBlePickitConnectionState.postValue("Link Loss");
-    }
-
-    @Override
-    public void onServicesDiscovered(BluetoothDevice device, boolean optionalServicesFound)
-    {
-        mBlePickitIsReady.postValue(false);
-        mBlePickitConnectionState.postValue("Services Discovered");
-    }
-
-    @Override
-    public void onDeviceReady(BluetoothDevice device)
-    {
-        mBlePickitConnectionState.postValue(device.getName() + " ready");
-        mBlePickitIsReady.postValue(true);
-    }
-
-    @Override
-    public void onBondingRequired(BluetoothDevice device)
-    {
-
-    }
-
-    @Override
-    public void onBonded(@NonNull BluetoothDevice device)
-    {
-
-    }
-
-    @Override
-    public void onBondingFailed(@NonNull BluetoothDevice device)
-    {
-
-    }
-
-    @Override
-    public void onError(BluetoothDevice device, String message, int errorCode)
-    {
-
-    }
-
-    @Override
-    public void onDeviceNotSupported(BluetoothDevice device)
-    {
-        // Called when service discovery has finished but the main services were not found on the device.
-        mBlePickitConnectionState.postValue("Services Discovering finised. Main services not found.");
     }
 }
