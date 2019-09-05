@@ -23,6 +23,7 @@ Then add it to your project by adding the following dependency:
 
 ```grovy
 dependencies {
+    ...
     implementation 'com.github.sebastien-perreau:APL-BLE-Pickit:0.1-beta'
 }
 ```
@@ -32,10 +33,22 @@ dependencies {
 Clone this project and add *blepickit* module as a dependency to your project:
 
 1. In your (Project Settings) *settings.gradle* file add the following lines:
+
 ```groovy
+include ':app'
+
 include ':blepickit'
 project(':blepickit').projectDir = file('../APL_BLEPickit/blepickit')
 ```
-2. In *app/build.gradle* file add `implementation project(':blepickit')` inside dependencies.
+
+2. In *app/build.gradle* file add library inside dependencies:
+
+```grovy
+dependencies {
+    ...
+    implementation project(':blepickit')
+}
+```
+
 3. Sync project and build it.
  
