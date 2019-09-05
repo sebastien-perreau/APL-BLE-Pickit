@@ -8,8 +8,6 @@ import androidx.annotation.NonNull;
 import androidx.lifecycle.AndroidViewModel;
 import androidx.lifecycle.MutableLiveData;
 
-import com.perreau.sebastien.blepickit.MyAsyncTask;
-
 public class BlePickitViewModel extends AndroidViewModel implements BlePickitManager.Callbacks
 {
 

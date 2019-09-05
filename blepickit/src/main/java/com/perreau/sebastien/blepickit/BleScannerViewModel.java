@@ -42,12 +42,9 @@ public class BleScannerViewModel extends AndroidViewModel
     protected void onCleared()
     {
         super.onCleared();
-        getApplication().unregisterReceiver(mBluetoothStateBroadcastReceiver);
 
-        if (BleUtils.isMarshmallowOrAbove())
-        {
-            getApplication().unregisterReceiver(mLocationProviderChangedReceiver);
-        }
+        getApplication().unregisterReceiver(mBluetoothStateBroadcastReceiver);
+        getApplication().unregisterReceiver(mLocationProviderChangedReceiver);
     }
 
     public void refresh()
@@ -130,10 +127,7 @@ public class BleScannerViewModel extends AndroidViewModel
     private void registerBroadcastReceivers(final Application application)
     {
         application.registerReceiver(mBluetoothStateBroadcastReceiver, new IntentFilter(BluetoothAdapter.ACTION_STATE_CHANGED));
-        if (BleUtils.isMarshmallowOrAbove())
-        {
-            application.registerReceiver(mLocationProviderChangedReceiver, new IntentFilter(LocationManager.MODE_CHANGED_ACTION));
-        }
+        application.registerReceiver(mLocationProviderChangedReceiver, new IntentFilter(LocationManager.MODE_CHANGED_ACTION));
     }
 
     /**

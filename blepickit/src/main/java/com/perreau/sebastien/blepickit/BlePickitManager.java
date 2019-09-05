@@ -26,6 +26,8 @@ public class BlePickitManager extends BleManager<BlePickitManager.Callbacks>
         void onChar1503DataSent(final byte[] data);
     }
 
+    public final static int REQUEST_ACCESS_COARSE_LOCATION = 1022;
+
     public final static UUID BLE_UUID_SERVICE = UUID.fromString("a7bb1500-eef2-4a8e-80d4-13a83c8cf46f");
     private final static UUID BLE_UUID_CHAR_1501 = UUID.fromString("a7bb1501-eef2-4a8e-80d4-13a83c8cf46f");
     private final static UUID BLE_UUID_CHAR_1502 = UUID.fromString("a7bb1502-eef2-4a8e-80d4-13a83c8cf46f");

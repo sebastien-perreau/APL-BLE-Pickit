@@ -63,20 +63,16 @@ public class BleUtils
      */
     public static boolean isLocationEnabled(final Context context)
     {
-        if (isMarshmallowOrAbove())
+        int locationMode = Settings.Secure.LOCATION_MODE_OFF;
+        try
         {
-            int locationMode = Settings.Secure.LOCATION_MODE_OFF;
-            try
-            {
-                locationMode = Settings.Secure.getInt(context.getContentResolver(), Settings.Secure.LOCATION_MODE);
-            }
-            catch (final Settings.SettingNotFoundException e)
-            {
-                // do nothing
-            }
-            return locationMode != Settings.Secure.LOCATION_MODE_OFF;
+            locationMode = Settings.Secure.getInt(context.getContentResolver(), Settings.Secure.LOCATION_MODE);
         }
-        return true;
+        catch (final Settings.SettingNotFoundException e)
+        {
+            // do nothing
+        }
+        return locationMode != Settings.Secure.LOCATION_MODE_OFF;
     }
 
     /**
@@ -88,7 +84,7 @@ public class BleUtils
     public static boolean isLocationRequired(final Context context)
     {
         final SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(context);
-        return preferences.getBoolean(PREFS_LOCATION_NOT_REQUIRED, isMarshmallowOrAbove());
+        return preferences.getBoolean(PREFS_LOCATION_NOT_REQUIRED, true);
     }
 
     /**
@@ -116,10 +112,5 @@ public class BleUtils
     {
         final SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(context);
         preferences.edit().putBoolean(PREFS_PERMISSION_REQUESTED, true).apply();
-    }
-
-    public static boolean isMarshmallowOrAbove()
-    {
-        return Build.VERSION.SDK_INT >= Build.VERSION_CODES.M;
     }
 }
